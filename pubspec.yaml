@@ -1,0 +1,6 @@
+name: annotation_crawler
+version: 0.0.1-dev
+author: Matias Meno & Martin Flucka
+description: Helps finding classes or methods with specific annotations.
+dev_dependencies:
+  unittest: any
