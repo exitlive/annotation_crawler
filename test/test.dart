@@ -73,6 +73,25 @@ main() {
 
   
   
+  
+  /**
+   * Test to check the found Methods on class or instance.
+   * Since the methods are the same, we put them in one function.
+   */
+  _checkFoundMethods(List<MethodMirror> foundMethods) {
+    expect(foundMethods.length, equals(2));
+    
+    expect(foundMethods.firstWhere((MethodMirror methodMirror) =>
+        methodMirror.simpleName == const Symbol("methodWithAnnotation"), orElse: () => null) != null,
+        equals(true));
+
+    expect(foundMethods.firstWhere((MethodMirror methodMirror) =>
+        methodMirror.simpleName == const Symbol("anotherMethodWithAnnotation"), orElse: () => null) != null,
+        equals(true));
+   
+  }
+  
+  
   group('findMethodsOnInstance()', () {
     
     test("returns all methods provided annotation class", () {
@@ -81,15 +100,7 @@ main() {
 
       var foundMethods = findMethodsOnInstance(instance, methodAnnotation);
       
-      expect(foundMethods.length, equals(2));
-      
-      expect(foundMethods.firstWhere((MethodMirror methodMirror) =>
-          methodMirror.simpleName == const Symbol("methodWithAnnotation"), orElse: () => null) != null,
-          equals(true));
-
-      expect(foundMethods.firstWhere((MethodMirror methodMirror) =>
-          methodMirror.simpleName == const Symbol("anotherMethodWithAnnotation"), orElse: () => null) != null,
-          equals(true));
+      _checkFoundMethods(foundMethods);
       
     });
     test("doesn't return methods with unused annotation", () {
@@ -97,6 +108,27 @@ main() {
       var instance = new ClassWithMethods();
       
       var foundMethods = findMethodsOnInstance(instance, unusedAnnotation);
+      
+      expect(foundMethods.length, equals(0));
+      
+    });
+  });
+  
+  
+  
+  group('findMethodsOnClass()', () {
+    
+    test("returns all methods provided annotation class", () {
+      
+      var foundMethods = findMethodsOnClass(ClassWithMethods, methodAnnotation);
+      
+      _checkFoundMethods(foundMethods);
+
+     
+    });
+    test("doesn't return methods with unused annotation", () {
+      
+      var foundMethods = findMethodsOnClass(ClassWithMethods, unusedAnnotation);
       
       expect(foundMethods.length, equals(0));
       
