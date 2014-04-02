@@ -33,6 +33,53 @@ List<ClassMirror> findClasses(Type annotation) {
 }
 
 
+/**
+ * Returns all methods with provided annotation in the provided instance.
+ */
+List<MethodMirror> findMethodsOnInstance(Object instance, Type annotation) {
+
+  InstanceMirror reflectedInstance = reflect(instance);
+  ClassMirror myClassMirror = reflectedInstance.type;
+
+  return _findMethodsOnClassMirror(myClassMirror, annotation);
+
+}
+
+/**
+ * Returns all methods with provided annotation on passed class.
+ */
+List<MethodMirror> findMethodsOnClass(Type clazz, Type annotation) {
+
+  return _findMethodsOnClassMirror(reflectClass(clazz), annotation);
+
+}
+
+
+
+
+List<MethodMirror> _findMethodsOnClassMirror(ClassMirror classMirror, Type annotation) {
+  
+  var methodMirrors = [];
+
+  for (DeclarationMirror dm in classMirror.declarations.values) {
+    if (dm is MethodMirror && dm.isRegularMethod && dm.metadata.length > 0) {
+      for (InstanceMirror meta in dm.metadata) {
+        if (meta.reflectee.runtimeType == annotation) {
+          methodMirrors.add(dm);
+          break;
+        }
+      }
+    }
+  }
+
+  return methodMirrors;
+  
+}
+
+
+
+
+
 
 
 //
