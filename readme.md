@@ -4,24 +4,34 @@
 
 Helps finding classes or methods with specific annotations.
 
-
 ## Usage
 
-```dart
+To find all `ClassMirror`s annotated with a specific annotation type
 
+```dart
 import "annotation_crawler";
 
 main () {
 
-  List<ClassMirror> classes = findClasses(myAnnotation);
-  
-  List instances = [ ];
-  
-  for (var cls in classes) {
-    instances.push(cls.newInstance(const Symbol(""), [ "param1", "param2", "param3" ]).reflectee);
-  }
+  //perform all plays written by Arthur miller
+  _annotatedDeclarations(Author))
+      .where((decl) => decl.declaration is ClassMirror && decl.annotation == const Author("Arthur Miller"))
+      .map((decl) => decl.declaration.newInstance(const Symbol(""), ["Her majesty's Theater"]).reflectee)
+      .forEach(perform);
+      
+  //Perform the first scence of ACT III of the Merchant of Venice
+  var play = _annotatedDeclarations(Title)
+      .where((decl) => decl.annotation.name = "The Merchant of venice")
+      .single.newInstance(const Symbol(""), ["Her majesty's theater"]);
+      
+  var scene = getField(
+      play,
+      _annotatedDeclarations(Scene, on: play.reflectee.runtimeType)
+        .where((decl) => decl.annotation.act == "III"
+                         && decl.annotation.scene == "I")
+        .single.simpleName);
+        
+  scene.reflectee.perform;
 
 }
-
-
 ```
