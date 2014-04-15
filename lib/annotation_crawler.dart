@@ -64,12 +64,16 @@ class AnnotatedDeclaration {
  *      // A MethodMirror on `Clazz.foo`.
  *      annotatedDeclarations(anno, Clazz).single.declaration;
  */
-List<AnnotatedDeclaration> annotatedDeclarations(var annotation, {ClassMirror on, recursive: false}) =>
-    new UnmodifiableListView(
+List<AnnotatedDeclaration> annotatedDeclarations(var annotation, {ClassMirror on, recursive: false}) {
+  if (annotation is! Type)
+    annotation = annotation.runtimeType;
+  annotation = reflectClass(annotation);
+  return new UnmodifiableListView(
         on == null
             ? _topLevelAnnotatedDeclarations(annotation)
             : _findDeclarationsOn(on, annotation, recursive: recursive)
     );
+}
 
 /**
  * Goes through all the classes in this library, and returns those with the
@@ -77,7 +81,7 @@ List<AnnotatedDeclaration> annotatedDeclarations(var annotation, {ClassMirror on
  */
 List<ClassMirror> findClasses(Type annotation) =>
     new UnmodifiableListView(
-        _topLevelAnnotatedDeclarations(annotation)
+        _topLevelAnnotatedDeclarations(reflectClass(annotation))
         .where((annoDecl) => annoDecl.declaration is ClassMirror)
         .map((annoDecl) => annoDecl.declaration)
     );
@@ -87,7 +91,7 @@ List<ClassMirror> findClasses(Type annotation) =>
  */
 List<MethodMirror> findMethodsOnClass(Type cls, Type annotation) =>
     new UnmodifiableListView(
-        _findDeclarationsOn(reflectClass(cls), annotation)
+        _findDeclarationsOn(reflectClass(cls), reflectClass(annotation))
         .where((annoDecl) => annoDecl.declaration is MethodMirror)
         .map((annoDecl) => annoDecl.declaration)
     );
@@ -99,8 +103,7 @@ List<MethodMirror> findMethodsOnInstance(Object obj, Type annotation) =>
     findMethodsOnClass(obj.runtimeType, annotation);
 
 
-Iterable<AnnotatedDeclaration> _findDeclarationsOn(ClassMirror cls, var annotation, {bool recursive: false}) {
-  if (annotation is! Type) annotation = annotation.runtimeType;
+Iterable<AnnotatedDeclaration> _findDeclarationsOn(ClassMirror cls, ClassMirror annotation, {bool recursive: false}) {
 
   _toMap(var decls) => new Map.fromIterable(decls, key: (decl) => decl.declaration.simpleName);
 
@@ -115,20 +118,17 @@ Iterable<AnnotatedDeclaration> _findDeclarationsOn(ClassMirror cls, var annotati
     ));
   }
 
-  decls.addAll(_toMap(
-      _filterAnnotated(cls.declarations.values, reflectClass(annotation)).toList()
-  ));
+  decls.addAll(_toMap(_filterAnnotated(cls.declarations.values, annotation)));
 
   return decls.values;
 }
 
 
-Iterable<AnnotatedDeclaration> _topLevelAnnotatedDeclarations(var annotation) {
-  if (annotation is! Type) annotation = annotation.runtimeType;
+Iterable<AnnotatedDeclaration> _topLevelAnnotatedDeclarations(ClassMirror annotation) {
 
   var topLevelDeclarations =
       currentMirrorSystem().libraries.values
-      .expand((lib) => _filterAnnotated(lib.declarations.values, reflectClass(annotation)));
+      .expand((lib) => _filterAnnotated(lib.declarations.values, annotation));
 
   return topLevelDeclarations;
 }
