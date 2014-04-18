@@ -9,29 +9,28 @@ Helps finding classes or methods with specific annotations.
 To find all `ClassMirror`s annotated with a specific annotation type
 
 ```dart
-import "annotation_crawler";
+    
+    import "annotation_crawler";
 
-main () {
+    main () {
 
-  //perform all plays written by Arthur miller
-  _annotatedDeclarations(Author))
-      .where((decl) => decl.declaration is ClassMirror && decl.annotation == const Author("Arthur Miller"))
-      .map((decl) => decl.declaration.newInstance(const Symbol(""), ["Her majesty's Theater"]).reflectee)
-      .forEach(perform);
+      //perform all plays written by Arthur miller
+      _annotatedDeclarations(Author))
+          .where((decl) => decl.declaration is ClassMirror && decl.annotation == const Author("Arthur Miller"))
+          .map((decl) => decl.declaration.newInstance(const Symbol(""), ["Her majesty's Theater"]).reflectee)
+          .forEach(perform);
       
-  //Perform the first scence of ACT III of the Merchant of Venice
-  var play = _annotatedDeclarations(Title)
+      //Perform the first scence of ACT III of the Merchant of Venice
+    var play = annotatedDeclarations(Title)
       .where((decl) => decl.annotation.name = "The Merchant of venice")
       .single.newInstance(const Symbol(""), ["Her majesty's theater"]);
       
-  var scene = getField(
-      play,
-      _annotatedDeclarations(Scene, on: play.reflectee.runtimeType)
-        .where((decl) => decl.annotation.act == "III"
-                         && decl.annotation.scene == "I")
-        .single.simpleName);
-        
-  scene.reflectee.perform;
+      MethodMirror scene = annotatedDeclarations(Scene, on: play.runtimeType)
+      .where((decl) => decl.annotation.act == "III" &&
+                      decl.annotation.scene == "I")
+      .single;
+      
+      perform(play.getField(scene.simpleName).reflectee); 
 
-}
+    }
 ```
