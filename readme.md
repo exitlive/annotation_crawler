@@ -2,11 +2,9 @@
 
 [![Build Status](https://drone.io/github.com/exitlive/annotation_crawler/status.png)](https://drone.io/github.com/exitlive/annotation_crawler/latest)
 
-Helps finding classes or methods with specific annotations.
+Helps finding annotated declarations in a particular scope. 
 
 ## Usage
-
-To find all `ClassMirror`s annotated with a specific annotation type
 
 ```dart
     
@@ -15,15 +13,15 @@ To find all `ClassMirror`s annotated with a specific annotation type
     main () {
 
       //perform all plays written by Arthur miller
-      _annotatedDeclarations(Author))
+      annotatedDeclarations(Author)
           .where((decl) => decl.declaration is ClassMirror && decl.annotation == const Author("Arthur Miller"))
           .map((decl) => decl.declaration.newInstance(const Symbol(""), ["Her majesty's Theater"]).reflectee)
           .forEach(perform);
       
       //Perform the first scence of ACT III of the Merchant of Venice
-    var play = annotatedDeclarations(Title)
-      .where((decl) => decl.annotation.name = "The Merchant of venice")
-      .single.newInstance(const Symbol(""), ["Her majesty's theater"]);
+      var play = annotatedDeclarations(Title)
+        .where((decl) => decl.annotation.name = "The Merchant of venice")
+        .single.newInstance(const Symbol(""), ["Her majesty's theater"]);
       
       MethodMirror scene = annotatedDeclarations(Scene, on: play.runtimeType)
       .where((decl) => decl.annotation.act == "III" &&
