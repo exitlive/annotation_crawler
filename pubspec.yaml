@@ -1,7 +1,7 @@
 name: annotation_crawler
-version: 0.0.1
+version: 0.1.0
 author: Matias Meno <m@tias.me> & Martin Flucka <martin.flucka@gmail.com>
-homepage: https://github.com/exitlive/annotation_crawler
 description: Helps finding classes or methods with specific annotations.
+homepage: https://github.com/exitlive/annotation_crawler
 dev_dependencies:
   unittest: any
